@@ -1,77 +1,83 @@
 <template>
-  <v-row justify="center" align="center">
-    <v-col cols="12" sm="8" md="6">
-      <v-card class="logo py-4 d-flex justify-center">
-        <NuxtLogo />
-        <VuetifyLogo />
-      </v-card>
-      <v-card>
-        <v-card-title class="headline">
-          Welcome to the Vuetify + Nuxt.js template
-        </v-card-title>
-        <v-card-text>
-          <p>Vuetify is a progressive Material Design component framework for Vue.js. It was designed to empower developers to create amazing applications.</p>
-          <p>
-            For more information on Vuetify, check out the <a
-              href="https://vuetifyjs.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              documentation
-            </a>.
-          </p>
-          <p>
-            If you have questions, please join the official <a
-              href="https://chat.vuetifyjs.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="chat"
-            >
-              discord
-            </a>.
-          </p>
-          <p>
-            Find a bug? Report it on the github <a
-              href="https://github.com/vuetifyjs/vuetify/issues"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="contribute"
-            >
-              issue board
-            </a>.
-          </p>
-          <p>Thank you for developing with Vuetify and I look forward to bringing more exciting features in the future.</p>
-          <div class="text-xs-right">
-            <em><small>&mdash; John Leider</small></em>
-          </div>
-          <hr class="my-3">
-          <a
-            href="https://nuxtjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt Documentation
-          </a>
-          <br>
-          <a
-            href="https://github.com/nuxt/nuxt.js"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Nuxt GitHub
-          </a>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="primary"
-            nuxt
-            to="/inspire"
-          >
-            Continue
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+  <div>
+    <Titulo></Titulo>
+    <v-container fluid class="background-app">
+      <v-row justify="center">
+        <v-col cols="12" md="6">
+          <v-file-input
+            :rules="rules"
+            accept="image/png, image/jpeg"
+            placeholder="Pick an avatar"
+            prepend-icon="mdi-camera"
+            show-size
+            v-model="obj.img"
+            label="Avatar"
+            @change="preview()"
+          ></v-file-input>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="5">
+          <v-img
+            max-height="250"
+            max-width="350"
+            class="mx-auto"
+            :src="obj.url"
+          ></v-img>
+        </v-col>
+        <v-col cols="5" v-if="obj.url !== ''">
+          <h3>Opciones de analisis</h3>
+          <v-checkbox
+            v-model="obj.op"
+            label="Easy descripción"
+            color="indigo"
+            value="description"
+            disabled
+          ></v-checkbox>
+          <v-checkbox
+            v-model="obj.op"
+            label="Adivinar de que se trata la imagen"
+            color="indigo"
+            value="labels"
+            @change="ejemplo()"
+          ></v-checkbox>
+          <v-btn color="success" outlined>Comenzar -></v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
+  </div>
 </template>
+
+<script>
+export default{
+  data: ()=>({
+    obj: {
+      img: null,
+      op:['description'],
+      url: '',
+    },
+    rules: [
+      value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
+    ],
+  }),
+  methods:{
+    preview(){
+      if(this.obj.img != null){
+        this.obj.url= URL.createObjectURL(this.obj.img);
+        console.log(this.obj.url);
+      }else{
+        this.obj.url= '';
+      }
+    },
+    async ejemplo(){
+      const ip = await this.$axios.$post('http://localhost:5000/api/recognition/description', this.obj);
+    }
+  }
+}
+</script>
+
+<style scoped>
+.background-app{
+
+}
+</style>

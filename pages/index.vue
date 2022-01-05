@@ -79,11 +79,13 @@
     <EasyDescription
       :description = "description"
       :skill = "skill"
+      v-if="description !== ''"
     />
 
     <Tags
       :colors="colors"
       :tags="tags"
+      v-if="tags !== null"
     />
 
     <FacesAndObjects
@@ -92,24 +94,24 @@
       :colors = "colors"
       :yesPrintObj="yesPrintObj"
       :yesPrintFac="yesPrintfac"
-    ></FacesAndObjects>
+      v-if="yesPrintObj || yesPrintfac"
+    />
+
     <Landmarks
       :landmarks="landmarks"
       :colors = "colors"
+      v-if="landmarks !== null"
     />
     <AdultContent
       :isAdultContent = "isAdultContent"
-
+      v-if="isAdultContent !== null"
     />
   </div>
 </template>
 
 <script>
-import FacesAndObjects from "../components/FacesAndObjects";
-import EasyDescription from "../components/EasyDescription";
 export default{
   name:"principal",
-  components: {EasyDescription, FacesAndObjects},
   data: ()=>({
     value: 50,
     skill: 0,
@@ -154,7 +156,13 @@ export default{
         this.obj.url= URL.createObjectURL(this.obj.img);
       }else{
         this.obj.url= '';
+        this.cleanAll();
       }
+    },
+
+    cleanAll(){
+      this.description = '';
+      this.skill = '';
     },
     async sendImage(){
       this.load = true;

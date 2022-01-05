@@ -35,6 +35,9 @@
         <canvas id="myCanvas" style="border:1px solid">
           Your browser does not support the HTML canvas tag.
         </canvas>
+        <canvas id="myCanvas2" style="border:1px solid">
+          Your browser does not support the HTML canvas tag.
+        </canvas>
         <img :src="url" alt="" id="image" style="display: none">
       </v-col>
     </v-row>
@@ -44,7 +47,7 @@
 <script>
 
 export default{
-  props: ['url', 'colors', 'findObjectAndFaces', 'yesPrint'],
+  props: ['url', 'colors', 'findObjectAndFaces', 'yesPrintObj', 'YesPrintFac'],
 
   data: ()=> ({
     ejemplo: [
@@ -64,36 +67,40 @@ export default{
     start(){
       this.objects();
     },
-    objects(ctx){
-      //x y, w, h
-      this.findObjectAndFaces.objectsArray.forEach(element => ctx.rect(element.rectangle.x, element.rectangle.y, element.rectangle.w, element.rectangle.h));
-      ctx.stroke();
-    },
-    faces(ctx){
-      this.findObjectAndFaces.facesArray.forEach(element => ctx.rect(element.faceRectangle.left, element.faceRectangle.top, element.faceRectangle.width, element.faceRectangle.height));
-      ctx.stroke();
+    setImage(name){
+      let img = document.getElementById("image");
+      let heightImage = img.height,
+        widthImage = img.width;
+      let c = document.getElementById(name);
+      c.height = heightImage;
+      c.width = widthImage;
+      let ctx = c.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "red";
+
+      return ctx;
+
     }
   },
   watch:{
-    yesPrint: function() {
-        let img = document.getElementById("image");
-        let heightImage = img.height,
-            widthImage = img.width;
-        let c = document.getElementById("myCanvas");
-        c.height = heightImage;
-        c.width = widthImage;
-        let ctx = c.getContext("2d");
-        ctx.drawImage(img, 0, 0);
-        ctx.lineWidth = 2;
-        ctx.strokeStyle = "red";
-
+    yesPrintObj: function() {
+        let ctx = this.setImage('myCanvas');
         if(this.findObjectAndFaces.objectsArray){
-          this.objects(ctx);
+          this.findObjectAndFaces.objectsArray.forEach(element => ctx.rect(element.rectangle.x, element.rectangle.y, element.rectangle.w, element.rectangle.h));
         }
         if(this.findObjectAndFaces.facesArray){
-          this.faces(ctx);
+          this.findObjectAndFaces.facesArray.forEach(element => ctx.rect(element.faceRectangle.left, element.faceRectangle.top, element.faceRectangle.width, element.faceRectangle.height));
         }
+        ctx.stroke();
     },
+    yesPrintFace: function(){//queeeeee
+        let ctx = this.setImage('myCanvas2');
+        if(this.findObjectAndFaces.facesArray){
+          this.findObjectAndFaces.facesArray.forEach(element => ctx.rect(element.faceRectangle.left, element.faceRectangle.top, element.faceRectangle.width, element.faceRectangle.height));
+        }
+        ctx.stroke();
+    }
   }
 }
 

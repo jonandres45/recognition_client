@@ -73,64 +73,50 @@
             let's go :D ->
           </v-btn>
         </v-col>
-        <v-col cols="5">
-          <h3>Litle description</h3>
-          <p>{{description}}</p>
-          <h3>Estoy seguro de esa descripcion un</h3>
-          <v-progress-linear
-            v-model="skillPorc"
-            color="blue-grey"
-            height="25"
-            class="mt-8"
-          >
-            <strong>{{ skillPorc }}%</strong>
-          </v-progress-linear>
-        </v-col>
-        <v-col cols="12" class="mt-8 text-center">
-          <h3>Tags </h3>
-          <v-progress-circular
-            :rotate="360"
-            :size="230"
-            :width="18"
-            :value="(tag.confidence * 100).toFixed(2)"
-            :color="colors[Math.floor(Math.random() * (11-1) + 1)]"
-            v-for="(tag, i) in tags"
-            :key="i"
-          >
-            {{ tag.name }}
-            {{ (tag.confidence * 100).toFixed(2) }} %
-          </v-progress-circular>
-        </v-col>
-        <v-col cols="12" class="text-center">
-          <h1>Is adult content, gore or racy?</h1>
-          <h1 color="red">Yes o.o</h1>
-        </v-col>
       </v-row>
     </v-container>
+
+    <EasyDescription
+      :description = "description"
+      :skill = "skill"
+    />
+
+    <Tags
+      :colors="colors"
+      :tags="tags"
+    />
+
     <FacesAndObjects
       :url="obj.url"
       :findObjectAndFaces="findObjectAndFaces"
       :colors = "colors"
-      :yesPrint="yesPrint"
+      :yesPrintObj="yesPrintObj"
+      :yesPrintFac="yesPrintfac"
     ></FacesAndObjects>
     <Landmarks
       :landmarks="landmarks"
       :colors = "colors"
     />
+    <AdultContent
+      :isAdultContent = "isAdultContent"
+
+    />
   </div>
 </template>
 
 <script>
-
+import FacesAndObjects from "../components/FacesAndObjects";
+import EasyDescription from "../components/EasyDescription";
 export default{
   name:"principal",
+  components: {EasyDescription, FacesAndObjects},
   data: ()=>({
     value: 50,
     skill: 0,
     load: false,
     obj: {
       img: null,
-      op:[],
+      op:['description'],
       url: '',
     },
     rules: [
@@ -153,18 +139,15 @@ export default{
     tags:null,
     description: '',
     findObjectAndFaces:{},
-    yesPrint: false,
-    landmarks: {},
-
+    yesPrintObj: false,
+    yesPrintfac: false,
+    landmarks: null,
+    isAdultContent: null
   }),
   mounted() {
 
   },
-  computed:{
-    skillPorc: function(){
-      return (this.skill*100).toFixed(2);
-    }
-  },
+
   methods:{
     preview(event){
       if(this.obj.img != null){
@@ -205,13 +188,13 @@ export default{
         case "faces":
           console.log("Buscando las caras");
           this.findObjectAndFaces.facesArray = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/faces');
-          this.yesPrint = true;
+          this.yesPrintObj = true;
           console.log(this.findObjectAndFaces.facesArray);
           break;
         case "objects":
           console.log("Buscando objetos");
           this.findObjectAndFaces.objectsArray = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/objects');
-          this.yesPrint = true;
+          this.yesPrintFac = true;
           console.log(this.findObjectAndFaces.objectsArray)
           break;
         case "celebrities":
@@ -221,15 +204,11 @@ export default{
           break;
         case "adult":
           console.log("Buscando contenido de adultos")
-          console.log(await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/content-adult'));
+          this.isAdultContent = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/content-adult');
+          console.log(this.isAdultContent);
       }
     }
   },
 }
 </script>
 
-<style scoped>
-.v-progress-circular {
-  margin: 1rem;
-}
-</style>

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <Titulo></Titulo>
-    <v-container fluid class="background-app">
+    <Titulo v-if="active"/>
+    <v-container fluid class="background-app" v-if="active">
       <v-row justify="center">
         <v-col cols="12" md="6">
           <v-file-input
@@ -79,7 +79,8 @@
     <EasyDescription
       :description = "description"
       :skill = "skill"
-      v-if="description !== ''"
+      v-if="description !== null"
+      class="mt-15"
     />
 
     <Tags
@@ -106,6 +107,23 @@
       :isAdultContent = "isAdultContent"
       v-if="isAdultContent !== null"
     />
+
+    <v-container>
+      <v-row>
+        <v-col cols="12" class="text-center">
+          <v-btn
+            color="success"
+            large
+            outlined
+            x-large
+            @click="cleanAll()"
+            v-if="!active"
+          >
+            <-- Subir otra foto
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
@@ -139,12 +157,13 @@ export default{
       'deep-purple'
     ],
     tags:null,
-    description: '',
+    description: null,
     findObjectAndFaces:{},
     yesPrintObj: false,
     yesPrintfac: false,
     landmarks: null,
-    isAdultContent: null
+    isAdultContent: null,
+    active: true,
   }),
   mounted() {
 
@@ -161,8 +180,14 @@ export default{
     },
 
     cleanAll(){
-      this.description = '';
+      this.description = null;
       this.skill = '';
+      this.tags = null;
+      this.yesPrintObj = false;
+      this.yesPrintfac = false;
+      this.landmarks = null;
+      this.isAdultContent = null;
+      this.active= true;
     },
     async sendImage(){
       this.load = true;
@@ -181,6 +206,7 @@ export default{
       }
     },
     async services(data){
+      this.active = false;
       switch(data){
         case "description":
           console.log("Aqui vamos a ver la descripcion");

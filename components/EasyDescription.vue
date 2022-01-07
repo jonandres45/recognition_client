@@ -1,10 +1,9 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col>
-        <h3>Litle description</h3>
-        <p>{{description}}</p>
-        <h3>Estoy seguro de esa descripcion un</h3>
+    <v-row justify="center">
+      <v-col class="text-center" cols="9">
+        <h1>{{description}}</h1>
+        <h4>Estoy seguro de esa descripcion un</h4>
         <v-progress-linear
           v-model="skillPorc"
           color="blue-grey"

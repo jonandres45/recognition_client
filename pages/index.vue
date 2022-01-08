@@ -40,15 +40,15 @@
             color="pink"
             value="labels"
           ></v-checkbox>
-          <v-checkbox
+<!--          <v-checkbox
             v-model="obj.op"
             label="Detects Objects"
             color="purple"
             value="objects"
-          ></v-checkbox>
+          ></v-checkbox>-->
           <v-checkbox
             v-model="obj.op"
-            label="Detects faces"
+            label="Detects faces and objects"
             color="blue"
             value="faces"
           ></v-checkbox>
@@ -79,6 +79,7 @@
     <EasyDescription
       :description = "description"
       :skill = "skill"
+      :url = "obj.url"
       v-if="description !== null"
       class="mt-15"
     />
@@ -91,11 +92,11 @@
 
     <FacesAndObjects
       :url="obj.url"
-      :findObjectAndFaces="findObjectAndFaces"
+      :findObject="findObject"
+      :findFaces="findFaces"
       :colors = "colors"
       :yesPrintObj="yesPrintObj"
-      :yesPrintFac="yesPrintfac"
-      v-if="yesPrintObj || yesPrintfac"
+      v-show="yesPrintObj"
     />
 
     <Landmarks
@@ -144,23 +145,23 @@ export default{
     ],
     colors:[
       '',
-      'success',
-      'primary',
-      'error',
-      'pink',
-      'cyan',
-      'teal',
-      'orange',
-      'blue-grey',
-      'grey',
-      'amber',
-      'deep-purple'
+      '#4b7836',
+      '#5489df',
+      '#a23538',
+      '#fe94f6',
+      '#3b6965',
+      '#5a9d98',
+      '#ed8a4a',
+      '#465d65',
+      '#818181',
+      '#baae36',
+      '#663990'
     ],
     tags:null,
     description: null,
-    findObjectAndFaces:{},
+    findObject: null,
+    findFaces: null,
     yesPrintObj: false,
-    yesPrintfac: false,
     landmarks: null,
     isAdultContent: null,
     active: true,
@@ -184,10 +185,11 @@ export default{
       this.skill = '';
       this.tags = null;
       this.yesPrintObj = false;
-      this.yesPrintfac = false;
       this.landmarks = null;
       this.isAdultContent = null;
       this.active= true;
+      this.findObject = null;
+      this.findFaces = null;
     },
     async sendImage(){
       this.load = true;
@@ -221,15 +223,15 @@ export default{
           break;
         case "faces":
           console.log("Buscando las caras");
-          this.findObjectAndFaces.facesArray = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/faces');
+          this.findFaces = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/faces');
+          console.log("Buscando objetos");
+          this.findObject = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/objects');
+          console.log(this.findObject)
+          console.log(this.findFaces);
           this.yesPrintObj = true;
-          console.log(this.findObjectAndFaces.facesArray);
           break;
         case "objects":
-          console.log("Buscando objetos");
-          this.findObjectAndFaces.objectsArray = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/objects');
-          this.yesPrintFac = true;
-          console.log(this.findObjectAndFaces.objectsArray)
+          this.yesPrintObj = true;
           break;
         case "celebrities":
           console.log("Buscando celebridades")

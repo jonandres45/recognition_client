@@ -1,43 +1,42 @@
 <template>
-  <v-container>
+  <v-container class="mt-16">
     <v-row justify="center">
-      <v-col cols="12" class="text-center" v-if="findObjectAndFaces.objectsArray">
+      <v-col cols="6" class="text-center" v-if="findObject">
+        <h2>Estoy un % seguro de que hay en la imagen...</h2>
         <v-card>
-          <v-card-title>
-            Estoy un % seguro de que hay en la imagen...
-          </v-card-title>
           <v-card-text>
-            <v-progress-linear
-              :value="(obj.confidence * 100).toFixed(2)"
-              height="25"
-              class="mt-8"
-              :color="colors[Math.floor(Math.random() * (11-1) + 1)]"
-              v-for="(obj, i) in findObjectAndFaces.objectsArray"
+            <v-chip
+              :color="object.color"
+              v-for="(object, i) in objects"
               :key="i"
             >
-              <strong>{{obj.object}} {{(obj.confidence * 100).toFixed(2)}} %</strong>
-            </v-progress-linear>
+              <strong>{{object.element.object}} {{(object.element.confidence * 100).toFixed(2)}} %</strong>
+            </v-chip>
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" class="text-center" v-if="findObjectAndFaces.facesArray">
-        <h1>Y encontre {{findObjectAndFaces.facesArray.length }} caras </h1>
-        <p
+      <v-col cols="12" class="text-center" v-if="findFaces">
+        <h1>Y encontre {{faces.length }} cara{{faces.length > 1 ? 'S' : ''}} </h1>
+        <h2
           class="mt-8"
-          v-for="(obj, i) in findObjectAndFaces.facesArray"
+          v-for="(obj, i) in faces"
           :key="'cara'+i"
         >
-          <strong>Genero: {{obj.gender}} Posible edad: {{obj.age}} </strong>
-        </p>
+          <v-chip
+            class="ma-2"
+            :color="obj.color"
+          >
+            Genero: {{obj.element.gender}} Posible edad: {{obj.element.age}}
+          </v-chip>
+        </h2>
         <h2>Te los muestro todo en la siguiente imagen que e coloreado para ti :) </h2>
       </v-col>
-      <v-col cols="10">
-        <canvas id="myCanvas" style="border:1px solid">
-          Your browser does not support the HTML canvas tag.
-        </canvas>
-        <canvas id="myCanvas2" style="border:1px solid">
-          Your browser does not support the HTML canvas tag.
-        </canvas>
+      <v-col cols="12" class="text-center">
+<!--        <div style="width: 100%; height: 50vh; overflow: scroll">-->
+          <canvas id="myCanvas" style="border:1px solid">
+            Your browser does not support the HTML canvas tag.
+          </canvas>
+<!--        </div>-->
         <img :src="url" alt="" id="image" style="display: none">
       </v-col>
     </v-row>
@@ -47,7 +46,7 @@
 <script>
 
 export default{
-  props: ['url', 'colors', 'findObjectAndFaces', 'yesPrintObj', 'YesPrintFac'],
+  props: ['url', 'colors', 'yesPrintObj', 'findObject', 'findFaces'],
 
   data: ()=> ({
     ejemplo: [
@@ -59,6 +58,8 @@ export default{
         parent:
           {object: 'display', confidence: .68}}
     ],
+    objects:[],
+    faces:[]
   }),
   mounted() {
 
@@ -69,38 +70,49 @@ export default{
     },
     setImage(name){
       let img = document.getElementById("image");
-      let heightImage = img.height,
-        widthImage = img.width;
+      let heightImage = img.height * .50,
+        widthImage = img.width * .50;
       let c = document.getElementById(name);
       c.height = heightImage;
       c.width = widthImage;
       let ctx = c.getContext("2d");
-      ctx.drawImage(img, 0, 0);
-      ctx.lineWidth = 2;
+      ctx.drawImage(img, 0, 0, widthImage, heightImage);
+      ctx.lineWidth = 3;
       ctx.strokeStyle = "red";
 
       return ctx;
 
+    },
+    createRectObj(element, ctx){
+      ctx.beginPath();
+      let color = this.colors[Math.floor(Math.random() * (11-1) + 1)];
+      console.log("Color: " + color);
+      ctx.strokeStyle = color;
+      this.objects.push({element: element, color: color});
+      ctx.rect(element.rectangle.x*.50, element.rectangle.y*.50, element.rectangle.w*.50, element.rectangle.h*.50);
+      ctx.stroke();
+    },
+    cresteReactFac(element, ctx){
+      ctx.beginPath();
+      let color = this.colors[Math.floor(Math.random() * (11-1) + 1)];
+      ctx.strokeStyle = color;
+      this.faces.push({element: element, color: color});
+      ctx.rect(element.faceRectangle.left *.50, element.faceRectangle.top *.50, element.faceRectangle.width *.50, element.faceRectangle.height *.50)
+      ctx.stroke();
     }
   },
   watch:{
     yesPrintObj: function() {
+        this.objects = [];
+        this.faces = [];
         let ctx = this.setImage('myCanvas');
-        if(this.findObjectAndFaces.objectsArray){
-          this.findObjectAndFaces.objectsArray.forEach(element => ctx.rect(element.rectangle.x, element.rectangle.y, element.rectangle.w, element.rectangle.h));
+        if(this.findObject){
+          this.findObject.forEach((element)=> this.createRectObj(element, ctx));
         }
-        if(this.findObjectAndFaces.facesArray){
-          this.findObjectAndFaces.facesArray.forEach(element => ctx.rect(element.faceRectangle.left, element.faceRectangle.top, element.faceRectangle.width, element.faceRectangle.height));
+        if(this.findFaces){
+          this.findFaces.forEach((element)=>{this.cresteReactFac(element, ctx)});
         }
-        ctx.stroke();
     },
-    yesPrintFace: function(){//queeeeee
-        let ctx = this.setImage('myCanvas2');
-        if(this.findObjectAndFaces.facesArray){
-          this.findObjectAndFaces.facesArray.forEach(element => ctx.rect(element.faceRectangle.left, element.faceRectangle.top, element.faceRectangle.width, element.faceRectangle.height));
-        }
-        ctx.stroke();
-    }
   }
 }
 

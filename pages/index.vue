@@ -1,5 +1,21 @@
 <template>
   <div>
+    <v-container>
+      <v-row>
+        <v-col cols="12" class="text-center">
+          <v-btn
+            color="success"
+            large
+            outlined
+            x-large
+            @click="cleanAll()"
+            v-if="!active"
+          >
+            <-- Subir otra foto
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-container>
     <Titulo v-if="active"/>
     <v-container fluid class="background-app" v-if="active">
       <v-row justify="center">
@@ -106,10 +122,11 @@
     />
     <AdultContent
       :isAdultContent = "isAdultContent"
-      v-if="isAdultContent !== null"
+      ref="AdultContent"
+      v-show="isAdultContent !== null"
     />
 
-    <v-container>
+    <v-container class="mt-15">
       <v-row>
         <v-col cols="12" class="text-center">
           <v-btn
@@ -129,8 +146,10 @@
 </template>
 
 <script>
+import AdultContent from "../components/AdultContent";
 export default{
   name:"principal",
+  components: {AdultContent},
   data: ()=>({
     value: 50,
     skill: 0,
@@ -163,7 +182,7 @@ export default{
     findFaces: null,
     yesPrintObj: false,
     landmarks: null,
-    isAdultContent: null,
+    isAdultContent: '',
     active: true,
   }),
   mounted() {
@@ -241,6 +260,7 @@ export default{
         case "adult":
           console.log("Buscando contenido de adultos")
           this.isAdultContent = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/content-adult');
+          this.$refs.AdultContent.ejemplo();
           console.log(this.isAdultContent);
       }
     }

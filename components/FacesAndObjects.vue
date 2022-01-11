@@ -15,7 +15,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      <v-col cols="12" class="text-center" v-if="findFaces">
+      <v-col cols="12" class="text-center" v-if="faces.length > 0">
         <h1>Y encontre {{faces.length }} cara{{faces.length > 1 ? 'S' : ''}} </h1>
         <h2
           class="mt-8"
@@ -30,6 +30,9 @@
           </v-chip>
         </h2>
         <h2>Te los muestro todo en la siguiente imagen que e coloreado para ti :) </h2>
+      </v-col>
+      <v-col v-else cols="12" class="text-center">
+        <h2>No encontre ningún rostro</h2>
       </v-col>
       <v-col cols="12" class="text-center">
 <!--        <div style="width: 100%; height: 50vh; overflow: scroll">-->

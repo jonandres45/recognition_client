@@ -18,13 +18,14 @@
 
 export default {
   props: ['isAdultContent'],
+  name: 'AdultContent',
   data: ()=>({
     alert: null,
     text: '',
   }),
 
-  watch: {
-    isAdultContent(){
+  methods: {
+    ejemplo(){
       if (this.isAdultContent !== null){
         if(this.isAdultContent.isAdultContent){
           this.alert='error';
@@ -41,7 +42,8 @@ export default {
         }
       }
     }
-  }
+  },
+
 }
 
 </script>

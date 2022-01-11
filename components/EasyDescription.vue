@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center" dense>
-      <v-col class="text-center" cols="5">
+      <v-col class="text-center" cols="12" md="9" lg="5">
         <v-card>
           <v-img
             :src="url"

@@ -120,10 +120,11 @@
       :colors = "colors"
       v-if="landmarks !== null"
     />
+
     <AdultContent
       :isAdultContent = "isAdultContent"
       ref="AdultContent"
-      v-show="isAdultContent !== null"
+      v-show="isAdultContent !== ''"
     />
 
     <v-container class="mt-15">
@@ -205,10 +206,11 @@ export default{
       this.tags = null;
       this.yesPrintObj = false;
       this.landmarks = null;
-      this.isAdultContent = null;
+      this.isAdultContent = '';
       this.active= true;
       this.findObject = null;
       this.findFaces = null;
+      this.load = false;
     },
     async sendImage(){
       this.load = true;
@@ -219,26 +221,26 @@ export default{
         const res = await this.$axios.$post('https://recognition-jonandres.herokuapp.com/api/recognition/upload-image', data);
 
         if(res){
-          this.obj.op.forEach(element => this.services(element));
+          await this.obj.op.forEach(element => this.services(element));
         }
-        this.load = false;
       }catch(e){
         console.log("Error:" + e.message);
       }
     },
     async services(data){
-      this.active = false;
       switch(data){
         case "description":
           console.log("Aqui vamos a ver la descripcion");
           const descriptionObj = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/description');
           this.description = descriptionObj.text;
           this.skill = descriptionObj.confidence;
+          this.active = false;
           break;
         case "labels":
           console.log("Aqui vamos a ver las etiquetas");
           const tagsObj = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/labels');
           this.tags = tagsObj;
+          this.active = false;
           break;
         case "faces":
           console.log("Buscando las caras");
@@ -248,6 +250,7 @@ export default{
           console.log(this.findObject)
           console.log(this.findFaces);
           this.yesPrintObj = true;
+          this.active = false;
           break;
         case "objects":
           this.yesPrintObj = true;
@@ -256,12 +259,14 @@ export default{
           console.log("Buscando celebridades")
           this.landmarks = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/landmark');
           console.log(this.landmarks);
+          this.active = false;
           break;
         case "adult":
           console.log("Buscando contenido de adultos")
           this.isAdultContent = await this.$axios.$get('https://recognition-jonandres.herokuapp.com/api/recognition/content-adult');
           this.$refs.AdultContent.ejemplo();
           console.log(this.isAdultContent);
+          this.active = false;
       }
     }
   },

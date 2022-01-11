@@ -9,30 +9,34 @@
               :color="object.color"
               v-for="(object, i) in objects"
               :key="i"
+              v-if="object.element.object !== 'person'"
             >
-              <strong>{{object.element.object}} {{(object.element.confidence * 100).toFixed(2)}} %</strong>
+              <h2>{{object.element.object}} {{(object.element.confidence * 100).toFixed(2)}} %</h2>
             </v-chip>
           </v-card-text>
         </v-card>
       </v-col>
       <v-col cols="12" class="text-center" v-if="faces.length > 0">
-        <h1>Y encontre {{faces.length }} cara{{faces.length > 1 ? 'S' : ''}} </h1>
-        <h2
-          class="mt-8"
-          v-for="(obj, i) in faces"
-          :key="'cara'+i"
-        >
+        <h1>Encontre {{faces.length }} cara{{faces.length > 1 ? 's' : ''}} </h1>
           <v-chip
             class="ma-2"
             :color="obj.color"
+            v-for="(obj, i) in faces"
+            :key="'cara'+i"
           >
-            Genero: {{obj.element.gender}} Posible edad: {{obj.element.age}}
+
+            <h2>Genero: {{obj.element.gender}} Posible edad: {{obj.element.age}}</h2>
           </v-chip>
-        </h2>
-        <h2>Te los muestro todo en la siguiente imagen que e coloreado para ti :) </h2>
+        <h3 class="mt-15">Te lo muestro todo en la siguiente imagen que e coloreado para ti :) </h3>
       </v-col>
-      <v-col v-else cols="12" class="text-center">
-        <h2>No encontre ningún rostro</h2>
+      <v-col v-else cols="12">
+        <v-alert
+          color="yellow"
+          text
+          type="warning"
+        >
+          No encontre ningún rostro
+        </v-alert>
       </v-col>
       <v-col cols="12" class="text-center">
 <!--        <div style="width: 100%; height: 50vh; overflow: scroll">-->
@@ -92,10 +96,12 @@ export default{
       console.log("Color: " + color);
       ctx.strokeStyle = color;
       this.objects.push({element: element, color: color});
-      ctx.rect(element.rectangle.x*.50, element.rectangle.y*.50, element.rectangle.w*.50, element.rectangle.h*.50);
-      ctx.stroke();
+      if(element.object !== 'person'){
+        ctx.rect(element.rectangle.x*.50, element.rectangle.y*.50, element.rectangle.w*.50, element.rectangle.h*.50);
+        ctx.stroke();
+      }
     },
-    cresteReactFac(element, ctx){
+    createReactFac(element, ctx){
       ctx.beginPath();
       let color = this.colors[Math.floor(Math.random() * (11-1) + 1)];
       ctx.strokeStyle = color;
@@ -113,7 +119,7 @@ export default{
           this.findObject.forEach((element)=> this.createRectObj(element, ctx));
         }
         if(this.findFaces){
-          this.findFaces.forEach((element)=>{this.cresteReactFac(element, ctx)});
+          this.findFaces.forEach((element)=>{this.createReactFac(element, ctx)});
         }
     },
   }

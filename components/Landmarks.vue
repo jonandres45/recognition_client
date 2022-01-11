@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row justify="center">
-      <v-col cols="12" class="text-center">
+      <v-col cols="12" class="text-center" v-if="landmarks.length > 1">
         <v-card>
           <v-card-title>
             i finded land marks
@@ -17,6 +17,15 @@
             </v-chip>
           </v-card-text>
         </v-card>
+      </v-col>
+      <v-col v-else>
+        <v-alert
+          color="red"
+          type="error"
+          text
+        >
+          No encontre land marks
+        </v-alert>
       </v-col>
     </v-row>
   </v-container>

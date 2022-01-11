@@ -221,7 +221,7 @@ export default{
         const res = await this.$axios.$post('https://recognition-jonandres.herokuapp.com/api/recognition/upload-image', data);
 
         if(res){
-          await this.obj.op.forEach(element => this.services(element));
+          this.obj.op.forEach(element => this.services(element));
         }
       }catch(e){
         console.log("Error:" + e.message);

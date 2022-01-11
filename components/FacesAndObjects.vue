@@ -2,7 +2,6 @@
   <v-container class="mt-16">
     <v-row justify="center">
       <v-col cols="6" class="text-center" v-if="findObject">
-        <h2>Estoy un % seguro de que hay en la imagen...</h2>
         <v-card>
           <v-card-text>
             <v-chip

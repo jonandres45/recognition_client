@@ -6,20 +6,13 @@
           <v-img
             :src="url"
             class="white--text align-end"
-            gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+            gradient="to bottom, rgba(0,0,0,.2), rgba(0,0,0,.8)"
             height="300px"
           >
             <v-card-title v-text="description"></v-card-title>
           </v-img>
 
-          <v-progress-linear
-            v-model="skillPorc"
-            color="blue-grey"
-            height="25"
-            class="mt-8"
-          >
             <strong>Estoy seguro un {{ skillPorc }}%</strong>
-          </v-progress-linear>
 
         </v-card>
 <!--        <h1>{{description}}</h1>
